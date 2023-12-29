@@ -43,8 +43,8 @@ def display_image_with_bounding_box(img_path, class_label, confidence):
 # Example usage
 img_path = r'D:\3.1\4.1\ImgPro\ImgFood\5.jpg'
 class_label, confidence = predict_fruit_vegetable(img_path)
-print('Predicted Class:', class_label)
-print('Confidence:', confidence)
+# print('Predicted Class:', class_label)
+# print('Confidence:', confidence)
 
 # Display the image with bounding box
 display_image_with_bounding_box(img_path, class_label, confidence)
