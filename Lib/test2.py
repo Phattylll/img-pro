@@ -246,6 +246,8 @@ def process_image(image_url):
     print(barcode_info)
     return barcode_info
 
+from datetime import datetime, timedelta
+
 def api_process_image(image_url):
     barcode_info = process_image(image_url)
 
@@ -287,13 +289,19 @@ def api_process_image(image_url):
         # Add wordsave content to barcode_info
         barcode_info['second_product_name'] = second_product_name
 
+        # Set 'Production_date' as today
+        production_date = datetime.today().strftime('%d/%m/%Y')
+
+        # Set 'EXP' as three days from now
+        exp_date = (datetime.today() + timedelta(days=3)).strftime('%d/%m/%Y')
+
         result = {
             'category': category,
             'type': type_category,
             'product_name': product_name,
             'second_product_name': second_product_name,
-            'Production_date': None,
-            'EXP': None,
+            'Production_date': production_date,
+            'EXP': exp_date,
             'barcode_number': barcode_number
         }
 

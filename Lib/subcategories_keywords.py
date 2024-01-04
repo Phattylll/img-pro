@@ -128,6 +128,8 @@ subcategories_keywords = {
         'แฮม': ['ham','แฮม'],
         'ชีส': ['cheese','ชีส'],
         'โบโลน่า': ['โบโลน่า', 'Bologna'],
+        'หมูยอ': ['หมูยอ'],
+        
 
     },
     # Add more categories and subcategories as needed
