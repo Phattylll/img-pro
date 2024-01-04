@@ -152,14 +152,20 @@ def search_in_text(category, text, search_phrases, output_file_path):
                 print(f"- {found_phrase} (Similar words: {', '.join(similar_words)}), Similarity: {fuzz.ratio(found_phrase, similar_words[0])}%")
 
 # Function to save product information in wordsave.txt
+# Function to save product information in wordsave.txt
 def save_product_info(product_info, output_file_path, barcode_info):
+    # Clear the existing content of wordsave.txt
+    with open(output_file_path, 'w', encoding='utf-8'):
+        pass
+
     if product_info:
-        print(f"Saving Product Information: {product_info}")
+        # print(f"Saving Product Information: {product_info}")
         with open(output_file_path, 'a', encoding='utf-8') as output_file:
-            output_file.write(f"Product Information: {product_info}\n")
-            output_file.write("----------------------\n")
-        
+            output_file.write(product_info)
+            # output_file.write("----------------------\n")
+
         barcode_info['product_info'] = product_info
+
 
 # Function to search for barcodes on the internet using Open Food Facts API
 def search_barcodes_on_internet(barcodes, output_file_path, barcode_info):
@@ -242,6 +248,14 @@ def process_image(image_url):
 def api_process_image(image_url):
     barcode_info = process_image(image_url)
 
+    # Read the contents of wordsave.txt
+    second_product_name = ""
+    try:
+        with open(r'D:\3.1\4.1\ImgPro\ImgEXP\wordsave.txt', 'r', encoding='utf-8') as wordsave_file:
+            second_product_name = wordsave_file.read()
+    except FileNotFoundError:
+        pass  # Handle the case where wordsave.txt doesn't exist
+
     if 'product_info' in barcode_info and 'barcode' in barcode_info:
         product_name = barcode_info['product_info']
         barcode_number = barcode_info['barcode']
@@ -257,23 +271,18 @@ def api_process_image(image_url):
         else:
             category_or_type = default_category
 
+        # Add wordsave content to barcode_info
+        barcode_info['second_product_name'] = second_product_name
+
         result = {
-            'product_name': product_name,
             'category_or_type': category_or_type,
+            'product_name': product_name,
+            'second_product_name': second_product_name,
             'barcode_number': barcode_number
+            
         }
 
         return result
     else:
-        return {'error': 'Product information not found.'}
-
-# Route to trigger the image processing and return only data from barcode_info
-
-
-# @app.route('/api/processImage', methods=['GET'])
-# def api_process_image():
-#     barcode_info = process_image()
-#     return json.dumps(barcode_info, ensure_ascii=False).encode('utf8')
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=8001, debug=True)
+        # Return second_product_name even if product information is not found
+        return {'second_product_name': second_product_name}
