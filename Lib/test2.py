@@ -12,6 +12,7 @@ from pyzbar.pyzbar import decode
 import requests
 from urllib.request import urlopen
 from categories_keywords import categories_keywords
+from subcategories_keywords import subcategories_keywords
 import json
 
 sys.stdout.reconfigure(encoding='utf-8')
@@ -266,23 +267,40 @@ def api_process_image(image_url):
         # Find the matching category based on keywords
         for category, keywords in categories_keywords.items():
             if any(keyword.lower() in product_name.lower() for keyword in keywords):
-                category_or_type = category
+                if category in subcategories_keywords:
+                    # Set type based on subcategories_keywords for the matched category
+                    subcategory_keywords = subcategories_keywords[category]
+                    for subcategory, subkeywords in subcategory_keywords.items():
+                        if any(subkeyword.lower() in product_name.lower() for subkeyword in subkeywords):
+                            type_category = subcategory
+                            break
+                    else:
+                        type_category = 'อื่น ๆ'
+                else:
+                    type_category = 'อื่น ๆ'
+
                 break
         else:
-            category_or_type = default_category
+            category = default_category
+            type_category = 'อื่น ๆ'
 
         # Add wordsave content to barcode_info
         barcode_info['second_product_name'] = second_product_name
 
         result = {
-            'category_or_type': category_or_type,
+            'category': category,
+            'type': type_category,
             'product_name': product_name,
             'second_product_name': second_product_name,
+            'Production_date': None,
+            'EXP': None,
             'barcode_number': barcode_number
-            
         }
 
         return result
     else:
         # Return second_product_name even if product information is not found
-        return {'second_product_name': second_product_name}
+        return {
+            'second_product_name': second_product_name,
+            'barcode_number': None
+        }
