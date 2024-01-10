@@ -54,7 +54,16 @@ def process_received_image():
         }, ensure_ascii=False).encode('utf8')
         return Response(json_data, content_type='application/json; charset=utf-8')
     except Exception as e:
-        return {'status': 'error', 'message': str(e)}
+        json_data = json.dumps({
+            'status': 'error', 
+            'message': str(e),
+            'file_url': file_url,
+            # 'data': None
+            'data': barcode_info  # Assuming data should be set to None in case of an error
+    }, ensure_ascii=False).encode('utf8')
+    return Response(json_data, content_type='application/json; charset=utf-8')
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8002, debug=True)
