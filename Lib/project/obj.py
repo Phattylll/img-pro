@@ -8,7 +8,7 @@ from io import BytesIO
 from pyzbar.pyzbar import decode
 
 sys.path.append(r'D:\3.1\4.1\ImgPro\Lib')
-from categories_keywords import class_labels, class_details
+from categories_keywords import class_labels, class_details, class_unit  # Assuming you have class_unit defined
 
 IMAGE_SIZE = (224, 224)
 
@@ -116,9 +116,11 @@ def predict_class(img_path):
         if confidence >= 50:
             predicted_class = class_labels[predicted_class_index]
             class_items = class_details.get(predicted_class, [])
+            class_unit_result = class_unit.get(predicted_class, [])
         else:
             predicted_class = 'other'
             class_items = []
+            class_unit_result = []
 
         # Include only the desired fields in the result
         result = {
@@ -127,10 +129,10 @@ def predict_class(img_path):
             'predicted_class': predicted_class,
             'barcode': None,  # Since no barcode was found
             'product_name': None,  # Product name not applicable
+            'class_unit': class_unit_result,
         }
 
         return result
 
     except Exception as e:
         return {'error': str(e)}
-
