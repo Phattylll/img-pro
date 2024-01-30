@@ -90,17 +90,23 @@ def fetch_product_info(barcode):
 
 def predict_class(img_path):
     try:
+        # Initialize variables
+        status = 'success'
+        Img_path = None
+
         # Decode barcode
         barcode = decode_barcode(img_path)
+        Img_path = img_path  # Set Img_path
 
         if barcode:
             # Fetch product info from Open Food Facts
             product_name = fetch_product_info(barcode)
 
             if product_name:
-                return {'barcode': barcode, 'predicted_class': 'อื่น ๆ', 'product_name': product_name}
+                return {'status': status, 'Img_path': Img_path, 'barcode': barcode, 'predicted_class': 'อื่น ๆ', 'product_name': product_name}
             else:
-                return {'barcode': barcode, 'predicted_class': 'อื่น ๆ', 'product_name': "No product name in open food fact"}
+                
+                return {'status': status, 'Img_path': Img_path, 'barcode': barcode, 'predicted_class': 'อื่น ๆ', 'product_name': "No product name in open food fact api"}
 
         # Preprocess the image
         img_array = load_image(img_path)
@@ -124,6 +130,8 @@ def predict_class(img_path):
 
         # Include only the desired fields in the result
         result = {
+            'status': status,
+            'Img_path': Img_path,
             'class_items': class_items,
             'confidence': f'{confidence:.2f}%',
             'predicted_class': predicted_class,
@@ -135,4 +143,4 @@ def predict_class(img_path):
         return result
 
     except Exception as e:
-        return {'error': str(e)}
+        return {'status': 'error', 'Img_path': Img_path, 'error': str(e)}
