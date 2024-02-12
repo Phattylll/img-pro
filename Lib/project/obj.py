@@ -120,28 +120,22 @@ def predict_class(img_path):
 
         if confidence >= 50:
             predicted_class = class_labels[predicted_class_index]
-            class_items = class_details.get(predicted_class, [])
+            class_details_result = class_details.get(predicted_class, {})  # Retrieve class details
             class_unit_result = class_unit.get(predicted_class, [])
-
-            # Rank class_items based on confidence in descending order
-            class_items_with_confidence = [{'item': item, 'confidence': confidence} for item in class_items]
-            class_items_with_confidence.sort(key=lambda x: x['confidence'], reverse=True)
-            ranked_class_items = [{'item': entry['item'], 'confidence': f"{entry['confidence']:.4f}%"} for entry in class_items_with_confidence]
-
         else:
             predicted_class = 'other'
-            ranked_class_items = []
+            class_details_result = {}
             class_unit_result = []
 
         # Include only the desired fields in the result
         result = {
             'status': status,
             'Img_path': Img_path,
-            'ranked_class_items': ranked_class_items,
             'predicted_class': predicted_class,
             'confidence': f'{confidence:.4f}%',  # Display confidence with four decimal places
             'barcode': None,  # Since no barcode was found
             'product_name': None,  # Product name not applicable
+            'class_details': class_details_result,  # Include class details in the result
             'class_unit': class_unit_result,
         }
 
