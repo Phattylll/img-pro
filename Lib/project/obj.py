@@ -143,6 +143,7 @@ def predict_class(img_path):
             most_confident_idx = sorted_indices[0]
             most_confident_label = class_labels_fruit[most_confident_idx]
             most_confident_confidence = predictions[0][most_confident_idx]
+            sub_class_detail = []
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
             # Print corresponding fruit_groups for the most confident label
             most_confident_subclass = fruit_groups[most_confident_label]
@@ -151,6 +152,7 @@ def predict_class(img_path):
                 sub_confidence = predictions[0][class_labels_fruit.index(most_confident_label)] if sub_name in most_confident_subclass else 0
                 # print(f"{sub_name} - Confidence: {sub_confidence * 100:.2f}%")
                 print(f"{sub_name}")
+                sub_class_detail.append(sub_name)
             # Print fruit_groups for the rest of the class_labels_fruit
             for idx in sorted_indices[1:]:
                 current_label = class_labels_fruit[idx]
@@ -160,6 +162,7 @@ def predict_class(img_path):
                 for sub_idx, sub_name in enumerate(sorted_current_subclass, start=1):
                     sub_confidence = predictions[0][class_labels_fruit.index(current_label)] if sub_name in current_subclass else 0
                     print(f"{sub_name}")
+                    sub_class_detail.append(sub_name)
 
         elif predicted_class == "ผัก":
             model = load_model(r"D:\3.1\4.1\ImgPro\Lib\groupVeg_class_epoch_200.h5")
@@ -176,6 +179,7 @@ def predict_class(img_path):
             most_confident_idx = sorted_indices[0]
             most_confident_label = class_labels_vegetable[most_confident_idx]
             most_confident_confidence = predictions[0][most_confident_idx]
+            sub_class_detail = []
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
             # Print corresponding vegetable_groups for the most confident label
             most_confident_subclass = vegetable_groups[most_confident_label]
@@ -184,6 +188,7 @@ def predict_class(img_path):
                 sub_confidence = predictions[0][class_labels_vegetable.index(most_confident_label)] if sub_name in most_confident_subclass else 0
                 # print(f"{sub_name} - Confidence: {sub_confidence * 100:.2f}%")
                 print(f"{sub_name}")
+                sub_class_detail.append(sub_name)
             # Print vegetable_groups for the rest of the class_labels_vegetable
             for idx in sorted_indices[1:]:
                 current_label = class_labels_vegetable[idx]
@@ -193,6 +198,7 @@ def predict_class(img_path):
                 for sub_idx, sub_name in enumerate(sorted_current_subclass, start=1):
                     sub_confidence = predictions[0][class_labels_vegetable.index(current_label)] if sub_name in current_subclass else 0
                     print(f"{sub_name}")
+                    sub_class_detail.append(sub_name)
         elif predicted_class == "เนื้อสัตว์":
             model = load_model(r"D:\3.1\4.1\ImgPro\Lib\groupMeat_class_epoch_200.h5")
             print(f"Sub-model loaded successfully: {model}")
@@ -208,6 +214,7 @@ def predict_class(img_path):
             most_confident_idx = sorted_indices[0]
             most_confident_label = class_labels_meat[most_confident_idx]
             most_confident_confidence = predictions[0][most_confident_idx]
+            sub_class_detail = []
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
             # Print corresponding meat_groups for the most confident label
             most_confident_subclass = meat_groups[most_confident_label]
@@ -216,6 +223,7 @@ def predict_class(img_path):
                 sub_confidence = predictions[0][class_labels_meat.index(most_confident_label)] if sub_name in most_confident_subclass else 0
                 # print(f"{sub_name} - Confidence: {sub_confidence * 100:.2f}%")
                 print(f"{sub_name}")
+                sub_class_detail.append(sub_name)
             # Print meat_groups for the rest of the class_labels_meat
             for idx in sorted_indices[1:]:
                 current_label = class_labels_meat[idx]
@@ -225,6 +233,7 @@ def predict_class(img_path):
                 for sub_idx, sub_name in enumerate(sorted_current_subclass, start=1):
                     sub_confidence = predictions[0][class_labels_meat.index(current_label)] if sub_name in current_subclass else 0
                     print(f"{sub_name}")
+                    sub_class_detail.append(sub_name)
 
         else:
             predicted_sub_class = 'other'
@@ -240,9 +249,9 @@ def predict_class(img_path):
             'product_name': None,  # Product name not applicable
             'class_details': class_details_result,  # Include class details in the result
             'class_unit': class_unit_result,
-            'sub_class': sub_class ,  # Include sub-classification in the result
-            'sub_class_detail': sub_class_detail,  # Include subclass details in the result
-        }
+            'sub_class': most_confident_label, 
+            'sub_class_detail': sub_class_detail, 
+            }
 
         return result
 
