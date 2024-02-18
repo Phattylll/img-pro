@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
+from tensorflow.keras.models import load_model
 import numpy as np
 import os
 import sys
@@ -15,11 +16,15 @@ IMAGE_SIZE = (224, 224)
 # Load the Trained Model
 loaded_model = None  # Initialize as None
 
-def load_model(model_path):
-    global loaded_model
-    if loaded_model is None:
-        loaded_model = tf.keras.models.load_model(model_path)
-    return loaded_model
+# def load_model(model_path):
+#     global loaded_model
+#     try:
+#         if loaded_model is None:
+#             loaded_model = tf.keras.models.load_model(model_path)
+#         return loaded_model
+#     except Exception as e:
+#         raise RuntimeError(f"Error loading model from {model_path}: {str(e)}")
+
 
 def load_image(img_path):
     try:
@@ -88,19 +93,6 @@ def fetch_product_info(barcode):
     except Exception as e:
         raise e
 
-def predict_sub_class(img_path, sub_model_path, sub_class_labels, subclass_details):
-    try:
-        sub_model = load_model(sub_model_path)
-        sub_img_array = load_image(img_path)
-        sub_predictions = sub_model.predict(sub_img_array)
-        sub_class_index = np.argmax(sub_predictions)
-        sub_class_label = sub_class_labels[sub_class_index]
-        sub_class_detail = subclass_details.get(sub_class_label, {})  # Retrieve subclass details
-        return sub_class_label, sub_class_detail
-
-    except Exception as e:
-        raise e
-    
 def predict_class(img_path):
     try:
         # Initialize variables
@@ -131,37 +123,112 @@ def predict_class(img_path):
         predicted_class_index = np.argmax(predictions)
         confidence = np.max(predictions) * 100
 
-        if confidence >= 50:
-            predicted_class = class_labels[predicted_class_index]
-            class_details_result = class_details.get(predicted_class, {})  # Retrieve class details
-            class_unit_result = class_unit.get(predicted_class, [])
+        predicted_class = class_labels[predicted_class_index]
+        class_details_result = class_details.get(predicted_class, {})  # Retrieve class details
+        class_unit_result = class_unit.get(predicted_class, [])
 
-            # Add sub-classification based on predicted class
-            if predicted_class == "ผลไม้":
-                sub_model_path = r"D:\3.1\4.1\ImgPro\Lib\groupFruit_class_epoch_200.h5"
-                sub_class_labels = class_labels_fruit
-                subclass_details = fruit_groups
-                sub_class, sub_class_detail = predict_sub_class(img_path, sub_model_path, sub_class_labels, subclass_details)
-            elif predicted_class == "ผัก":
-                sub_model_path = r"D:\3.1\4.1\ImgPro\Lib\groupVeg_class_epoch_200.h5"
-                sub_class_labels = class_labels_vegetable
-                subclass_details = vegetable_groups
-                sub_class, sub_class_detail = predict_sub_class(img_path, sub_model_path, sub_class_labels, subclass_details)
-            elif predicted_class == "เนื้อสัตว์":
-                sub_model_path = r"D:\3.1\4.1\ImgPro\Lib\groupMeat_class_epoch_200.h5"
-                sub_class_labels = class_labels_meat
-                subclass_details = meat_groups
-                sub_class, sub_class_detail = predict_sub_class(img_path, sub_model_path, sub_class_labels, subclass_details)
-            else:
-                sub_class = []
-                sub_class_detail = {}
+        # Add sub-classification based on predicted class
+        if predicted_class == "ผลไม้":
+            model = load_model(r"D:\3.1\4.1\ImgPro\Lib\groupFruit_class_epoch_200.h5")
+            print(f"Sub-model loaded successfully: {model}")
+
+            # Load and preprocess the image
+            img = image.load_img(img_path, target_size=(244, 244))
+            img_array = image.img_to_array(img)
+            img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+            img_array /= 255.0
+            print(f"Image loaded and preprocessed successfully for sub-model{img}")       
+            predictions = model.predict(img_array)
+            sorted_indices = np.argsort(-predictions[0])
+            most_confident_idx = sorted_indices[0]
+            most_confident_label = class_labels_fruit[most_confident_idx]
+            most_confident_confidence = predictions[0][most_confident_idx]
+            print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
+            # Print corresponding fruit_groups for the most confident label
+            most_confident_subclass = fruit_groups[most_confident_label]
+            sorted_subclass = sorted(most_confident_subclass, key=lambda x: x.lower())
+            for sub_idx, sub_name in enumerate(sorted_subclass, start=1):
+                sub_confidence = predictions[0][class_labels_fruit.index(most_confident_label)] if sub_name in most_confident_subclass else 0
+                # print(f"{sub_name} - Confidence: {sub_confidence * 100:.2f}%")
+                print(f"{sub_name}")
+            # Print fruit_groups for the rest of the class_labels_fruit
+            for idx in sorted_indices[1:]:
+                current_label = class_labels_fruit[idx]
+                current_subclass = fruit_groups[current_label]
+                sorted_current_subclass = sorted(current_subclass, key=lambda x: x.lower())
+                # print(f"\n{idx}. {current_label} - Confidence:")
+                for sub_idx, sub_name in enumerate(sorted_current_subclass, start=1):
+                    sub_confidence = predictions[0][class_labels_fruit.index(current_label)] if sub_name in current_subclass else 0
+                    print(f"{sub_name}")
+
+        elif predicted_class == "ผัก":
+            model = load_model(r"D:\3.1\4.1\ImgPro\Lib\groupVeg_class_epoch_200.h5")
+            print(f"Sub-model loaded successfully: {model}")
+
+            # Load and preprocess the image
+            img = image.load_img(img_path, target_size=(244, 244))
+            img_array = image.img_to_array(img)
+            img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+            img_array /= 255.0
+            print(f"Image loaded and preprocessed successfully for sub-model{img}")       
+            predictions = model.predict(img_array)
+            sorted_indices = np.argsort(-predictions[0])
+            most_confident_idx = sorted_indices[0]
+            most_confident_label = class_labels_vegetable[most_confident_idx]
+            most_confident_confidence = predictions[0][most_confident_idx]
+            print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
+            # Print corresponding vegetable_groups for the most confident label
+            most_confident_subclass = vegetable_groups[most_confident_label]
+            sorted_subclass = sorted(most_confident_subclass, key=lambda x: x.lower())
+            for sub_idx, sub_name in enumerate(sorted_subclass, start=1):
+                sub_confidence = predictions[0][class_labels_vegetable.index(most_confident_label)] if sub_name in most_confident_subclass else 0
+                # print(f"{sub_name} - Confidence: {sub_confidence * 100:.2f}%")
+                print(f"{sub_name}")
+            # Print vegetable_groups for the rest of the class_labels_vegetable
+            for idx in sorted_indices[1:]:
+                current_label = class_labels_vegetable[idx]
+                current_subclass = vegetable_groups[current_label]
+                sorted_current_subclass = sorted(current_subclass, key=lambda x: x.lower())
+                # print(f"\n{idx}. {current_label} - Confidence:")
+                for sub_idx, sub_name in enumerate(sorted_current_subclass, start=1):
+                    sub_confidence = predictions[0][class_labels_vegetable.index(current_label)] if sub_name in current_subclass else 0
+                    print(f"{sub_name}")
+        elif predicted_class == "เนื้อสัตว์":
+            model = load_model(r"D:\3.1\4.1\ImgPro\Lib\groupMeat_class_epoch_200.h5")
+            print(f"Sub-model loaded successfully: {model}")
+
+            # Load and preprocess the image
+            img = image.load_img(img_path, target_size=(244, 244))
+            img_array = image.img_to_array(img)
+            img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+            img_array /= 255.0
+            print(f"Image loaded and preprocessed successfully for sub-model{img}")       
+            predictions = model.predict(img_array)
+            sorted_indices = np.argsort(-predictions[0])
+            most_confident_idx = sorted_indices[0]
+            most_confident_label = class_labels_meat[most_confident_idx]
+            most_confident_confidence = predictions[0][most_confident_idx]
+            print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
+            # Print corresponding meat_groups for the most confident label
+            most_confident_subclass = meat_groups[most_confident_label]
+            sorted_subclass = sorted(most_confident_subclass, key=lambda x: x.lower())
+            for sub_idx, sub_name in enumerate(sorted_subclass, start=1):
+                sub_confidence = predictions[0][class_labels_meat.index(most_confident_label)] if sub_name in most_confident_subclass else 0
+                # print(f"{sub_name} - Confidence: {sub_confidence * 100:.2f}%")
+                print(f"{sub_name}")
+            # Print meat_groups for the rest of the class_labels_meat
+            for idx in sorted_indices[1:]:
+                current_label = class_labels_meat[idx]
+                current_subclass = meat_groups[current_label]
+                sorted_current_subclass = sorted(current_subclass, key=lambda x: x.lower())
+                # print(f"\n{idx}. {current_label} - Confidence:")
+                for sub_idx, sub_name in enumerate(sorted_current_subclass, start=1):
+                    sub_confidence = predictions[0][class_labels_meat.index(current_label)] if sub_name in current_subclass else 0
+                    print(f"{sub_name}")
 
         else:
-            predicted_class = 'other'
-            class_details_result = {}
-            class_unit_result = []
-            sub_class = []
-            sub_class_detail = {}
+            predicted_sub_class = 'other'
+            predicted_sub_class_detail = {}
 
         # Include only the desired fields in the result
         result = {
@@ -173,7 +240,7 @@ def predict_class(img_path):
             'product_name': None,  # Product name not applicable
             'class_details': class_details_result,  # Include class details in the result
             'class_unit': class_unit_result,
-            'sub_class': sub_class,  # Include sub-classification in the result
+            'sub_class': sub_class ,  # Include sub-classification in the result
             'sub_class_detail': sub_class_detail,  # Include subclass details in the result
         }
 
