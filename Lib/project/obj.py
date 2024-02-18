@@ -8,7 +8,8 @@ from io import BytesIO
 from pyzbar.pyzbar import decode
 
 sys.path.append(r'D:\3.1\4.1\ImgPro\Lib')
-from categories_keywords import class_labels, class_details, class_unit  # Assuming you have class_unit defined
+from categories_keywords import class_labels, class_details, class_unit, class_labels_meat, class_labels_fruit, class_labels_vegetable, meat_groups, fruit_groups, vegetable_groups  # Assuming you have class_unit and class_labels_fruit defined
+
 
 IMAGE_SIZE = (224, 224)
 
@@ -122,10 +123,22 @@ def predict_class(img_path):
             predicted_class = class_labels[predicted_class_index]
             class_details_result = class_details.get(predicted_class, {})  # Retrieve class details
             class_unit_result = class_unit.get(predicted_class, [])
+            
+            # Add sub-classification based on predicted class
+            if predicted_class == "ผลไม้":
+                sub_class = class_labels_fruit
+            elif predicted_class == "ผัก":
+                sub_class = class_labels_vegetable
+            elif predicted_class == "เนื้อสัตว์":
+                sub_class = class_labels_meat
+            else:
+                sub_class = []
+
         else:
             predicted_class = 'other'
             class_details_result = {}
             class_unit_result = []
+            sub_class = []
 
         # Include only the desired fields in the result
         result = {
@@ -137,9 +150,12 @@ def predict_class(img_path):
             'product_name': None,  # Product name not applicable
             'class_details': class_details_result,  # Include class details in the result
             'class_unit': class_unit_result,
+            'sub_class': sub_class,  # Include sub-classification in the result
         }
 
         return result
 
     except Exception as e:
-        return {'status': 'error', 'Img_path': Img_path, 'error': str(e)}
+        # Move the status variable outside the try block to ensure it's defined even if an exception occurs
+        status = 'error'
+        return {'status': status, 'Img_path': Img_path, 'error': str(e)}
