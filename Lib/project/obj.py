@@ -10,16 +10,15 @@ from pyzbar.pyzbar import decode
 sys.path.append(r'D:\3.1\4.1\ImgPro\Lib')
 from categories_keywords import class_labels, class_details, class_unit, class_labels_meat, class_labels_fruit, class_labels_vegetable, meat_groups, fruit_groups, vegetable_groups  # Assuming you have class_unit and class_labels_fruit defined
 
-
 IMAGE_SIZE = (224, 224)
 
 # Load the Trained Model
 loaded_model = None  # Initialize as None
 
-def load_model():
+def load_model(model_path):
     global loaded_model
     if loaded_model is None:
-        loaded_model = tf.keras.models.load_model(r'D:\3.1\4.1\ImgPro\Lib\food_classtest4')
+        loaded_model = tf.keras.models.load_model(model_path)
     return loaded_model
 
 def load_image(img_path):
@@ -89,6 +88,19 @@ def fetch_product_info(barcode):
     except Exception as e:
         raise e
 
+def predict_sub_class(img_path, sub_model_path, sub_class_labels, subclass_details):
+    try:
+        sub_model = load_model(sub_model_path)
+        sub_img_array = load_image(img_path)
+        sub_predictions = sub_model.predict(sub_img_array)
+        sub_class_index = np.argmax(sub_predictions)
+        sub_class_label = sub_class_labels[sub_class_index]
+        sub_class_detail = subclass_details.get(sub_class_label, {})  # Retrieve subclass details
+        return sub_class_label, sub_class_detail
+
+    except Exception as e:
+        raise e
+    
 def predict_class(img_path):
     try:
         # Initialize variables
@@ -112,7 +124,7 @@ def predict_class(img_path):
         img_array = load_image(img_path)
 
         # Make predictions
-        loaded_model = load_model()
+        loaded_model = load_model(r'D:\3.1\4.1\ImgPro\Lib\food_classtest4')
         predictions = loaded_model.predict(img_array)
 
         # Get predicted class
@@ -123,22 +135,33 @@ def predict_class(img_path):
             predicted_class = class_labels[predicted_class_index]
             class_details_result = class_details.get(predicted_class, {})  # Retrieve class details
             class_unit_result = class_unit.get(predicted_class, [])
-            
+
             # Add sub-classification based on predicted class
             if predicted_class == "ผลไม้":
-                sub_class = class_labels_fruit
+                sub_model_path = r"D:\3.1\4.1\ImgPro\Lib\groupFruit_class_epoch_200.h5"
+                sub_class_labels = class_labels_fruit
+                subclass_details = fruit_groups
+                sub_class, sub_class_detail = predict_sub_class(img_path, sub_model_path, sub_class_labels, subclass_details)
             elif predicted_class == "ผัก":
-                sub_class = class_labels_vegetable
+                sub_model_path = r"D:\3.1\4.1\ImgPro\Lib\groupVeg_class_epoch_200.h5"
+                sub_class_labels = class_labels_vegetable
+                subclass_details = vegetable_groups
+                sub_class, sub_class_detail = predict_sub_class(img_path, sub_model_path, sub_class_labels, subclass_details)
             elif predicted_class == "เนื้อสัตว์":
-                sub_class = class_labels_meat
+                sub_model_path = r"D:\3.1\4.1\ImgPro\Lib\groupMeat_class_epoch_200.h5"
+                sub_class_labels = class_labels_meat
+                subclass_details = meat_groups
+                sub_class, sub_class_detail = predict_sub_class(img_path, sub_model_path, sub_class_labels, subclass_details)
             else:
                 sub_class = []
+                sub_class_detail = {}
 
         else:
             predicted_class = 'other'
             class_details_result = {}
             class_unit_result = []
             sub_class = []
+            sub_class_detail = {}
 
         # Include only the desired fields in the result
         result = {
@@ -151,6 +174,7 @@ def predict_class(img_path):
             'class_details': class_details_result,  # Include class details in the result
             'class_unit': class_unit_result,
             'sub_class': sub_class,  # Include sub-classification in the result
+            'sub_class_detail': sub_class_detail,  # Include subclass details in the result
         }
 
         return result
