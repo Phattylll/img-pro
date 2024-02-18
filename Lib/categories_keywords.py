@@ -28,3 +28,56 @@ class_unit ={
     'ผลไม้' : ['กรัม'],
     'อื่น ๆ': []
 }
+
+
+class_labels_meat = ['OtherMeats and Mushroom', 'Poultry', 'Seafood']
+meat_groups = {
+    'Poultry': ['chicken', 'duck'],
+    'Seafood': ['crab', 'crayfish', 'fish', 'shellfish', 'shrimp', 'squid'],
+    'OtherMeats and Mushroom': ['beef', 'egg', 'lamb', 'mushroom', 'offal', 'pork', 'Golden needle mushroom']
+}
+
+
+class_labels_fruit = ['Green and Brown Fruits','Red and Blue Fruits','Yellow and Orange Fruits']
+fruit_groups = {
+    'Green and Brown Fruits': ['Taro', 'Kiwi', 'Avocado', 'Coconut', 'Sapodilla', 'Potato', 'Guava', 'Custard apple', 'Melon', 'Longan'],
+    'Red and Blue Fruits': ['Tomato', 'Dragon fruit', 'Grapes', 'Rambutan', 'Lychee', 'Peach', 'Plum', 'Cherry', 'Salak', 'Apple', 'Blueberry', 'Pomegranate', 'Passion fruit', 'Watermelon', 'Mangosteen', 'Strawberry', 'Rose apple'],
+    'Yellow and Orange Fruits': ['Lemon', 'Orange', 'Chinese pear', 'Jicama', 'Durian', 'Banana', 'Pumpkin', 'Pineapple', 'Maprang', 'Mango', 'Corn', 'Pear', 'Jackfruit', 'Papaya', 'Cantaloupe'],
+    
+}
+
+class_labels_vegetable = ['Green vegetables','Red and orange vegetables','White and light-colored vegetables']
+vegetable_groups = {
+    'Green vegetables': ['Basil', 'Spring onion', 'Pepper', 'Coriander', 'Lemon grass', 'Ivy gourd', 'Sweet basil', 'Water spinach', 'Acacia', 'Long beans', 'Spinach', 'Broccoli', 'Kaffir lime', 'Peppermint', 'Chinese cabbage', 'Cucumber', 'Kale', 'Salad vegetables', 'Cabbage', 'Bitter melon', 'Asparagus', 'Squash', 'Neem', 'Eggplant', 'Bitter bean', 'Celery', 'Bok choy', 'Garlic chives'],
+    'Red and orange vegetables': ['Onion', 'Carrot', 'Chilli pepper', 'Capsicum', 'Bell pepper'],
+    'White and light-colored vegetables': ['Bamboo shoot', 'Ginger', 'Cauliflower', 'Lotus stem', 'Baby corn', 'Bean sprout', 'Raddish', 'Garlic', 'Sesbania grandiflora'],
+    }
+
+
+
+
+
+
+
+# class_labels_meat = ['เห็ดและอื่น ๆ ', 'สัตว์ปีก', 'อาหารทะเล']
+# meat_groups = {
+#     'สัตว์ปีก': ['ไก่', 'เป็ด'],
+#     'อาหารทะเล': ['ปู', 'กุ้ง', 'ปลา', 'หอย', 'หอยแมลงภู่', 'ปลาหมึก'],
+#     'อื่น ๆ และเห็ด': ['เนื้อวัว', 'ไข่', 'เนื้อแกะ', 'เห็ด', 'เครื่องใน', 'เนื้อหมู', 'เห็ดเข็มทอง']
+# }
+
+# class_labels_fruit = ['ผลไม้โทนสีเขียวและสีน้ำตาล', 'ผลไม้โทนสีแดงและสีน้ำเงิน', 'ผลไม้โทนสีเหลืองและสีส้ม']
+# fruit_groups = {
+# 'ผลไม้โทนสีเขียวและสีน้ำตาล': ['เผือก', 'กีวี', 'อะโวคาโด', 'มะพร้าว', 'ละมุด', 'มันฝรั่ง', 'ฝรั่ง', 'น้อยหน่า', 'เมล่อน', 'ลำไยและลองกอง'],
+# 'ผลไม้โทนสีแดงและสีน้ำเงิน': ['มะเขือเทศ', 'แก้วมังกร', 'องุ่น', 'เงาะ', 'ลิ้นจี่', 'พีช', 'ลุกพลัม', 'เชอร์รี่', 'สละ', 'แอปเปิ้ล', 'บลูเบอร์รี', 'ทับทิม', 'แตงโม', 'เสาวรส', 'สตรอว์เบอรี่', 'ชมพู่',',มังคุด'],
+# 'ผลไม้โทนสีเหลืองและสีส้ม': ['เลมอน', 'ส้ม', 'สาลี่', 'มันแกว', 'ทุเรียน', 'กล้วย', 'ฟักทอง', 'สับปะรด', 'มะปราง', 'มะม่วง', 'ข้าวโพด', 'ลูกแพร', 'ขนุน', 'มะละกอ', 'สับปะรด', 'แคนตาลูป']
+# }
+
+
+# class_labels_vegetable = ['ผักโทนสีเขียว', 'ผักโทนสีแดงและสีส้ม', 'ผักโทนสีสว่าง']
+# vegetable_groups = {
+# 'ผักโทนสีเขียว': ['โหระพา', 'ต้นหอม', 'พริกไทย', 'ผักชี', 'ตะไคร้', 'ตำลึง', 'กะเพรา', 'ผักบุ้ง', 'ชะอม', 'ถั่วฝักยาว', 'ผักโขม', 'บรอคโคลี', 'มะกรูด', 'สะระแหน่', 'ผักบุ้ง', 'ผักกาดขาว', 'แตงกวา','คะน้า', 'ผักสลัด', 'กะหล่ำปลี', 'มะระ', 'หน่อไม้ฝรั่ง', 'ฟัก', 'สะเดา','มะเขือยาว', 'มะเขือ', 'สะตอ', 'ขึ้นฉ่าย', 'กวางตุ้ง','ดอกหอม'],
+# 'ผักโทนสีแดงและสีส้ม': ['หัวหอม', 'แครอท', 'พริก', 'พริกหยวก', 'พริกสามสี'],
+# 'ผักโทนสีสว่าง': ['หน่อไม้', 'ขิง', 'กะหล่ำดอก', 'รากบัว', 'ข้าวโพดอ่อน', 'ถั่วงอก', 'หัวไชเท้า', 'กระเทียม', 'ดอกแค'] # Adjusted the translations based on the context
+# }
+
