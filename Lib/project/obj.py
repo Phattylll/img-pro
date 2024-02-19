@@ -203,7 +203,7 @@ def predict_class(img_path):
             if most_confident_label == 'Green vegetables':
                 sub_class = 'ผักโทนสีเขียว'
             elif most_confident_label == 'Red and orange vegetables':
-                sub_class = 'กโทนสีแดงและสีส้ม'
+                sub_class = 'ผักโทนสีแดงและสีส้ม'
             elif most_confident_label == 'White and light-colored vegetables':
                 sub_class = 'ผักโทนสีสว่าง'
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
