@@ -127,10 +127,23 @@ def predict_class(img_path):
             product_name = fetch_product_info(barcode)
 
             if product_name:
-                return {'status': status, 'Img_path': Img_path, 'barcode': barcode, 'predicted_class': 'อื่น ๆ', 'product_name': product_name}
+                    return {
+                        'status': status,
+                        'Img_path': Img_path,
+                        'barcode': barcode,
+                        'predicted_class': 'อื่น ๆ',
+                        'product_name': product_name,
+                        'sub_class': class_labels,
+             }
             else:
-                return {'status': status, 'Img_path': Img_path, 'barcode': barcode, 'predicted_class': 'อื่น ๆ', 'product_name': "No product name in open food fact api"}
-
+                    return {
+                        'status': status,
+                        'Img_path': Img_path,
+                        'barcode': barcode,
+                        'predicted_class': 'อื่น ๆ',
+                        'product_name': 'No data in open food fact api',
+                        'sub_class': class_labels,
+             }
         # Preprocess the image
         img_array = load_image(img_path)
 
