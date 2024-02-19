@@ -158,6 +158,14 @@ def predict_class(img_path):
             most_confident_label = class_labels_fruit[most_confident_idx]
             most_confident_confidence = predictions[0][most_confident_idx]
             sub_class_detail = []
+            # sub_class = {}
+                # Check for specific conditions and set 'sub_class' accordingly
+            if most_confident_label == 'Green and Brown Fruits':
+                sub_class = 'ผลไม้โทนสีเขียวและสีน้ำตาล'
+            elif most_confident_label == 'Red and Blue Fruits':
+                sub_class = 'ผลไม้โทนสีแดงและสีน้ำเงิน'
+            elif most_confident_label == 'Yellow and Orange Fruits':
+                sub_class = 'ผลไม้โทนสีเหลืองและสีส้ม'
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
             # Print corresponding fruit_groups for the most confident label
             most_confident_subclass = fruit_groups[most_confident_label]
@@ -192,6 +200,12 @@ def predict_class(img_path):
             most_confident_label = class_labels_vegetable[most_confident_idx]
             most_confident_confidence = predictions[0][most_confident_idx]
             sub_class_detail = []
+            if most_confident_label == 'Green vegetables':
+                sub_class = 'ผักโทนสีเขียว'
+            elif most_confident_label == 'Red and orange vegetables':
+                sub_class = 'กโทนสีแดงและสีส้ม'
+            elif most_confident_label == 'White and light-colored vegetables':
+                sub_class = 'ผักโทนสีสว่าง'
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
             
             # Print corresponding vegetable_groups for the most confident label
@@ -225,6 +239,12 @@ def predict_class(img_path):
             most_confident_label = class_labels_meat[most_confident_idx]
             most_confident_confidence = predictions[0][most_confident_idx]
             sub_class_detail = []
+            if most_confident_label == 'OtherMeats and Mushroom':
+                sub_class = 'เห็ดหรือเนื้อสัตว์อื่น ๆ '
+            elif most_confident_label == 'Poultry':
+                sub_class = 'สัตว์ปีก'
+            elif most_confident_label == 'Seafood':
+                sub_class = 'อาหารทะเล'
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
             
             # Print corresponding meat_groups for the most confident label
@@ -260,7 +280,7 @@ def predict_class(img_path):
             'product_name': None,  # Product name not applicable
             'class_details': class_details_result,  # Include class details in the result
             'class_unit': class_unit_result,
-            'sub_class': most_confident_label, 
+            'sub_class': sub_class, 
             'sub_class_detail': sub_class_detail, 
             }
 
