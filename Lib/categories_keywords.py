@@ -32,9 +32,9 @@ class_unit ={
 
 class_labels_meat = ['OtherMeats and Mushroom', 'Poultry', 'Seafood']
 meat_groups = {
-    'Poultry (สัตว์ปีก)': ['chicken (ไก่)', 'duck (เป็ด)'],
-    'Seafood (อาหารทะเล)': ['crab (ปู)', 'crayfish (กุ้ง)', 'fish (ปลา)', 'shellfish (หอย)', 'shrimp (กุ้ง)', 'squid (ปลาหมึก)'],
-    'OtherMeats and Mushroom (เห็ดและอื่น ๆ )': ['beef (เนื้อวัว)', 'egg (ไข่)', 'lamb (เนื้อแกะ)', 'mushroom (เห็ดต่าง ๆ)', 'offal (เครื้องใน)', 'pork (เนื้อหมู)', 'Golden needle mushroom (เห็ดเข็มทอง)']
+    'Poultry': ['chicken (ไก่)', 'duck (เป็ด)'],
+    'Seafood': ['crab (ปู)', 'crayfish (กุ้ง)', 'fish (ปลา)', 'shellfish (หอย)', 'shrimp (กุ้ง)', 'squid (ปลาหมึก)'],
+    'OtherMeats and Mushroom': ['beef (เนื้อวัว)', 'egg (ไข่)', 'lamb (เนื้อแกะ)', 'mushroom (เห็ดต่าง ๆ)', 'offal (เครื้องใน)', 'pork (เนื้อหมู)', 'Golden needle mushroom (เห็ดเข็มทอง)']
 }
 
 
