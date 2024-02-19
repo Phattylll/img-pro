@@ -8,6 +8,7 @@ import requests
 from io import BytesIO
 from pyzbar.pyzbar import decode
 
+
 sys.path.append(r'D:\3.1\4.1\ImgPro\Lib')
 from categories_keywords import class_labels, class_details, class_unit, class_labels_meat, class_labels_fruit, class_labels_vegetable, meat_groups, fruit_groups, vegetable_groups  # Assuming you have class_unit and class_labels_fruit defined
 
@@ -29,12 +30,10 @@ loaded_model = None  # Initialize as None
 def load_image(img_path):
     try:
         if img_path.startswith(('http://', 'https://')):
-            # Load image from URL
             response = requests.get(img_path)
-            response.raise_for_status()  # Raise an exception for HTTP errors
+            response.raise_for_status()
             img = image.load_img(BytesIO(response.content), target_size=IMAGE_SIZE)
         else:
-            # Load local image
             img = image.load_img(img_path, target_size=IMAGE_SIZE)
 
         img_array = image.img_to_array(img)
@@ -48,16 +47,36 @@ def load_image(img_path):
 
     except Exception as e:
         raise e
+    
+def load_imagesub(img_path):
+    try:
+        if img_path.startswith(('http://', 'https://')):
+            response = requests.get(img_path)
+            response.raise_for_status()
+            img = image.load_img(BytesIO(response.content), target_size=(244, 244))
+        else:
+            img = image.load_img(img_path, target_size=(244, 244))
+
+        img_array2 = image.img_to_array(img)
+        img_array2 = np.expand_dims(img_array2, axis=0)  # Fix typo here, replace img_array with img_array2
+        img_array2 /= 255.0
+
+        return img_array2
+
+    except requests.exceptions.HTTPError as e:
+        raise e
+
+    except Exception as e:
+        raise e
+
 
 def decode_barcode(img_path):
     try:
         if img_path.startswith(('http://', 'https://')):
-            # Load image from URL
             response = requests.get(img_path)
-            response.raise_for_status()  # Raise an exception for HTTP errors
+            response.raise_for_status()
             img = image.load_img(BytesIO(response.content))
         else:
-            # Load local image
             img = image.load_img(img_path)
 
         img_array = image.img_to_array(img).astype(np.uint8)
@@ -131,13 +150,8 @@ def predict_class(img_path):
         if predicted_class == "ผลไม้":
             model = load_model(r"D:\3.1\4.1\ImgPro\Lib\groupFruit_class_epoch_200.h5")
             print(f"Sub-model loaded successfully: {model}")
-
-            # Load and preprocess the image
-            img = image.load_img(img_path, target_size=(244, 244))
-            img_array = image.img_to_array(img)
-            img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
-            img_array /= 255.0
-            print(f"Image loaded and preprocessed successfully for sub-model{img}")       
+            img_array = load_imagesub(img_path)
+            print(f"Image loaded and preprocessed successfully for sub-model{img_array}")       
             predictions = model.predict(img_array)
             sorted_indices = np.argsort(-predictions[0])
             most_confident_idx = sorted_indices[0]
@@ -164,16 +178,14 @@ def predict_class(img_path):
                     print(f"{sub_name}")
                     sub_class_detail.append(sub_name)
 
+
         elif predicted_class == "ผัก":
             model = load_model(r"D:\3.1\4.1\ImgPro\Lib\groupVeg_class_epoch_200.h5")
             print(f"Sub-model loaded successfully: {model}")
 
-            # Load and preprocess the image
-            img = image.load_img(img_path, target_size=(244, 244))
-            img_array = image.img_to_array(img)
-            img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
-            img_array /= 255.0
-            print(f"Image loaded and preprocessed successfully for sub-model{img}")       
+            # Load and preprocess the image using load_imagesub function
+            img_array = load_imagesub(img_path)
+            print(f"Image loaded and preprocessed successfully for sub-model {img_array}")       
             predictions = model.predict(img_array)
             sorted_indices = np.argsort(-predictions[0])
             most_confident_idx = sorted_indices[0]
@@ -181,34 +193,32 @@ def predict_class(img_path):
             most_confident_confidence = predictions[0][most_confident_idx]
             sub_class_detail = []
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
+            
             # Print corresponding vegetable_groups for the most confident label
             most_confident_subclass = vegetable_groups[most_confident_label]
             sorted_subclass = sorted(most_confident_subclass, key=lambda x: x.lower())
             for sub_idx, sub_name in enumerate(sorted_subclass, start=1):
                 sub_confidence = predictions[0][class_labels_vegetable.index(most_confident_label)] if sub_name in most_confident_subclass else 0
-                # print(f"{sub_name} - Confidence: {sub_confidence * 100:.2f}%")
                 print(f"{sub_name}")
                 sub_class_detail.append(sub_name)
+
             # Print vegetable_groups for the rest of the class_labels_vegetable
             for idx in sorted_indices[1:]:
                 current_label = class_labels_vegetable[idx]
                 current_subclass = vegetable_groups[current_label]
                 sorted_current_subclass = sorted(current_subclass, key=lambda x: x.lower())
-                # print(f"\n{idx}. {current_label} - Confidence:")
                 for sub_idx, sub_name in enumerate(sorted_current_subclass, start=1):
                     sub_confidence = predictions[0][class_labels_vegetable.index(current_label)] if sub_name in current_subclass else 0
                     print(f"{sub_name}")
                     sub_class_detail.append(sub_name)
+
         elif predicted_class == "เนื้อสัตว์":
             model = load_model(r"D:\3.1\4.1\ImgPro\Lib\groupMeat_class_epoch_200.h5")
             print(f"Sub-model loaded successfully: {model}")
 
-            # Load and preprocess the image
-            img = image.load_img(img_path, target_size=(244, 244))
-            img_array = image.img_to_array(img)
-            img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
-            img_array /= 255.0
-            print(f"Image loaded and preprocessed successfully for sub-model{img}")       
+            # Load and preprocess the image using load_imagesub function
+            img_array = load_imagesub(img_path)
+            print(f"Image loaded and preprocessed successfully for sub-model {img_array}")       
             predictions = model.predict(img_array)
             sorted_indices = np.argsort(-predictions[0])
             most_confident_idx = sorted_indices[0]
@@ -216,24 +226,25 @@ def predict_class(img_path):
             most_confident_confidence = predictions[0][most_confident_idx]
             sub_class_detail = []
             print(f"1. Label: {most_confident_label} - Confidence: {most_confident_confidence}")
+            
             # Print corresponding meat_groups for the most confident label
             most_confident_subclass = meat_groups[most_confident_label]
             sorted_subclass = sorted(most_confident_subclass, key=lambda x: x.lower())
             for sub_idx, sub_name in enumerate(sorted_subclass, start=1):
                 sub_confidence = predictions[0][class_labels_meat.index(most_confident_label)] if sub_name in most_confident_subclass else 0
-                # print(f"{sub_name} - Confidence: {sub_confidence * 100:.2f}%")
                 print(f"{sub_name}")
                 sub_class_detail.append(sub_name)
+
             # Print meat_groups for the rest of the class_labels_meat
             for idx in sorted_indices[1:]:
                 current_label = class_labels_meat[idx]
                 current_subclass = meat_groups[current_label]
                 sorted_current_subclass = sorted(current_subclass, key=lambda x: x.lower())
-                # print(f"\n{idx}. {current_label} - Confidence:")
                 for sub_idx, sub_name in enumerate(sorted_current_subclass, start=1):
                     sub_confidence = predictions[0][class_labels_meat.index(current_label)] if sub_name in current_subclass else 0
                     print(f"{sub_name}")
                     sub_class_detail.append(sub_name)
+
 
         else:
             predicted_sub_class = 'other'
