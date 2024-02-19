@@ -134,6 +134,7 @@ def predict_class(img_path):
                         'predicted_class': 'อื่น ๆ',
                         'product_name': product_name,
                         'sub_class': class_labels,
+                        'subclass_unit': class_unit,
              }
             else:
                     return {
@@ -143,6 +144,7 @@ def predict_class(img_path):
                         'predicted_class': 'อื่น ๆ',
                         'product_name': 'No data in open food fact api',
                         'sub_class': class_labels,
+                        'subclass_unit': class_unit,
              }
         # Preprocess the image
         img_array = load_image(img_path)
