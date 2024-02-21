@@ -4,4 +4,5 @@
 4. run virtualenv env 
 5. .\env\Scripts\activate
 6. run pip install -r lib.txt
-7. python index.py
+7. cd project
+8. python obj_api.py และ python exp_api.py
