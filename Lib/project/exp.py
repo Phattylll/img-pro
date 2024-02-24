@@ -36,12 +36,21 @@ def detect_date_from_image(image_source):
                 # Use dateutil to parse extracted text for dates
                 parsed_date = parser.parse(line, fuzzy=True)
 
+                # Check if the parsed date has incomplete information
+                if not (parsed_date.day and parsed_date.month and parsed_date.year):
+                    raise ValueError("Incomplete date information")
+
                 # Append the parsed date to the list
                 parsed_dates.append(parsed_date)
             except Exception as e:
                 pass  # Ignore lines that cannot be parsed as dates
 
-        return parsed_dates
+        if not parsed_dates:
+            return "No date detected"
+        elif all(not (date.day and date.month and date.year) for date in parsed_dates):
+            return "All three components (day, month, year) are incomplete"
+        else:
+            return parsed_dates
 
     except Exception as e:
         return str(e)
@@ -54,33 +63,41 @@ def process_images(image_paths):
         # Iterate over each image path and detect dates
         for image_path in image_paths:
             result = detect_date_from_image(image_path)
-            if len(result) == 1:  # If only one date is detected, assume it is the expiration date
+            if isinstance(result, list):
+                if len(result) == 1:  # If only one date is detected, assume it is the expiration date
+                    date_info = {
+                        "Img_path": image_path,
+                        "EXP": {
+                            "d": str(result[-1].day),
+                            "m": str(result[-1].month),
+                            "Y": str(result[-1].year)
+                        }
+                    }
+                elif len(result) > 1:  # If multiple dates are detected
+                    # Set the earliest date as production date and the latest date as expiration date
+                    result.sort()  # Sort the dates
+                    date_info = {
+                        "Img_path": image_path,
+                        "PD": {
+                            "d": str(result[0].day),
+                            "m": str(result[0].month),
+                            "Y": str(result[0].year)
+                        },
+                        "EXP": {
+                            "d": str(result[-1].day),
+                            "m": str(result[-1].month),
+                            "Y": str(result[-1].year)
+                        }
+                    }
+            else:
                 date_info = {
                     "Img_path": image_path,
-                    "EXP": {
-                        "d": str(result[-1].day),
-                        "m": str(result[-1].month),
-                        "Y": str(result[-1].year)
-                    }
-                }
-            elif len(result) > 1:  # If multiple dates are detected
-                # Set the earliest date as production date and the latest date as expiration date
-                result.sort()  # Sort the dates
-                date_info = {
-                    "Img_path": image_path,
-                    "PD": {
-                        "d": str(result[0].day),
-                        "m": str(result[0].month),
-                        "Y": str(result[0].year)
-                    },
-                    "EXP": {
-                        "d": str(result[-1].day),
-                        "m": str(result[-1].month),
-                        "Y": str(result[-1].year)
-                    }
+                    "Msg": result
                 }
 
         return date_info
 
+    except ValueError as ve:
+        return "Please try again or customize by yourself"
     except Exception as e:
         return str(e)
