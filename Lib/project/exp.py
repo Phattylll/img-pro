@@ -66,6 +66,7 @@ def process_images(image_paths):
             if isinstance(result, list):
                 if len(result) == 1:  # If only one date is detected, assume it is the expiration date
                     date_info = {
+                        "status": "success",
                         "Img_path": image_path,
                         "EXP": {
                             "d": str(result[-1].day),
@@ -77,6 +78,7 @@ def process_images(image_paths):
                     # Set the earliest date as production date and the latest date as expiration date
                     result.sort()  # Sort the dates
                     date_info = {
+                        "status": "success",
                         "Img_path": image_path,
                         "PD": {
                             "d": str(result[0].day),
@@ -91,6 +93,7 @@ def process_images(image_paths):
                     }
             else:
                 date_info = {
+                    "status": "error",
                     "Img_path": image_path,
                     "Msg": result
                 }
@@ -98,6 +101,14 @@ def process_images(image_paths):
         return date_info
 
     except ValueError as ve:
-        return "Please try again or customize by yourself"
+        return {
+            "status": "error",
+            "Msg": "Please try again or customize by yourself"
+        }
     except Exception as e:
-        return str(e)
+        return {
+            "status": "error",
+            "Msg": str(e)
+        }
+
+
